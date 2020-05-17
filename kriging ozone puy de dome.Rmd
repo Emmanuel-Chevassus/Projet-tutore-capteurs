@@ -1,0 +1,473 @@
+---
+title: "kriging puy de dome"
+author: "Emmanuel Chevassus"
+date: "23/04/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Librairies utilisées
+```{r}
+library(sp)
+library(gstat)
+library(xlsx)
+library(sp)
+library(automap)
+library(dplyr) 
+library(ggplot2)
+library(scales)
+library(magrittr)
+```
+
+chargement des données experimentales
+dans le fichier xlsx, x est la longitude, y la latitude, et z la concentration en ozone(ppb)
+```{r}
+datdon=read.xlsx("/Users/Emmanuel/Desktop/ptut/kriging/test.xlsx", sheetIndex=1, header=TRUE, colClasses=NA,)
+mesurespdd<-datdon
+
+```
+
+Création de la grille sur laquelle les prédictions vont être representées
+```{r}
+coordinates(mesurespdd) <- ~ x + y
+mesurespdd <-mesurespdd[-zerodist(mesurespdd)[,1],] #Zerodist permet de supprimer les coordonées qui se chevauchent.
+
+class(mesurespdd)
+
+str(mesurespdd)
+
+bbox(mesurespdd)
+
+coordinates(mesurespdd) %>% glimpse
+
+proj4string(mesurespdd)
+
+identical( bbox(mesurespdd), mesurespdd@bbox )
+
+identical( coordinates(mesurespdd), mesurespdd@coords )
+
+mesurespdd@data %>% glimpse
+
+mesurespdd %>% as.data.frame %>% glimpse
+
+
+
+
+# Convert to SpatialPointsDataFrame
+#coordinates(mesurespdd) <- ~x+y
+proj4string(mesurespdd) <- CRS("+init=epsg:2154") #projection en coordonées Lambertiennes
+
+
+x=seq(from = min(mesurespdd$x), to = max(mesurespdd$x), by = 0.005) #by: resolution arbitraire que nous choisissons
+y=seq(from = min(mesurespdd$y), to = max(mesurespdd$y), by = 0.005)
+
+pts = expand.grid(x =x, y=y)
+coordinates(pts) <- ~x+y
+proj4string(pts) <- CRS("+init=epsg:2154")
+mesurespdd.grid = SpatialPixels(SpatialPoints(pts))
+proj4string(mesurespdd.grid) <- CRS("+init=epsg:2154")
+
+summary(mesurespdd.grid)
+class(mesurespdd.grid)
+gridded(mesurespdd.grid) <- TRUE
+
+mesurespdd.grid <- as(mesurespdd.grid, "SpatialPixels")
+
+
+
+
+
+```
+
+Voici les plots de nos données brutes, et la grille de points sur laquelle nous allons travailler
+```{r}
+plot1 <- mesurespdd %>% as.data.frame %>%
+  ggplot(aes(x, y)) + geom_point(size=1) + coord_equal() + 
+  ggtitle("Points with measurements")
+
+# this is clearly gridded over the region of interest
+plot2 <- mesurespdd.grid %>% as.data.frame %>%
+  ggplot(aes(x, y)) + geom_point(size=1) + coord_equal() + 
+  ggtitle("Points at which to estimate")
+
+library(gridExtra)
+grid.arrange(plot1, plot2, ncol = 2)
+```
+calcul de la matrice des distances inverses nécessaire au test de Moran
+```{r}
+ozone.dists <- as.matrix(dist(cbind(mesurespdd$x, mesurespdd$y)))
+ozone.dists.inv <- 1/ozone.dists
+diag(ozone.dists.inv) <- 0
+ozone.dists.inv[1:5, 1:5]
+
+library(ape)
+Moran.I(mesurespdd$z, ozone.dists.inv)
+
+```
+la p_value est très petite, pas d'autocorrelation entre les concentrations d'ozone. (Il devrait pourtant en y avoir une, le test est sûrement mal parametré!)
+
+
+Nous voulons ensuite obtenir les variogrames(on paramètre le kriging)
+
+Si la valeur absolue de l'asymmétrie de z est <1, il est recommande d'adapter un modèle logarithmique; 
+```{r}
+library(e1071)
+skewness(datdon$z)
+
+```
+on n'adopte donc pas de modèle logarithmique pour nos concentrations d'ozone.
+
+Il faut préciser ici psill, range, nugget et model
+
+range-Portée pratique = distance maximale d'auto-corrélation (lorsque la covariance devient constante). 
+
+sill-Valeur de la covariance atteinte par le semiovariogram lorsqu'il le range est atteint
+
+nugget-Effet pépite = Variations de la covariance à très petite échelle (lag proche de 0).attribuable aux erreurs de mesures sur le terrain
+
+psill=sill-nugget
+
+
+
+model=Sph,Mat,Exp...à voir plus en détails
+
+
+```{r}
+ # calculates sample variogram values 
+lzn.vgm <- variogram(z~1, mesurespdd)
+plot(lzn.vgm)
+sph.model <- vgm(psill=12, model="Sph", range=1, nugget=10)
+lzn.fit <- fit.variogram(object = lzn.vgm, model = sph.model)
+lzn.fit
+plot(lzn.vgm, lzn.fit) # plot the sample values, along with the fit model
+
+
+
+```
+La valeur du range est de 0.7438931, la valeur du psill est 8.599901
+
+
+```{r}
+lzn.kriged <- krige(z ~ 1, mesurespdd, mesurespdd.grid, model=lzn.fit)
+lzn.kriged %>% as.data.frame %>%
+  ggplot(aes(x=x, y=y)) + geom_tile(aes(fill=var1.pred)) + coord_equal() +
+  scale_fill_gradient(low = "yellow", high="red") +
+  scale_x_continuous(labels=comma) + scale_y_continuous(labels=comma) +
+  theme_bw()
+
+```
+Notre variograme étant un peu grossier, ce premier kriging n'est pas encore très convaincant..
+
+
+Heureusement,il existe une fonction autokrige estimant les paramètres du variogram automatiquement.
+Nous pouvons aussi utiliser les modèles "inverse weight distance"
+```{r}
+ozonekrig <- autoKrige(z~1, mesurespdd, mesurespdd.grid)
+PbIDW1 <- idw(formula=z~1,locations=mesurespdd,newdata=mesurespdd.grid,idp=1)
+PbIDW2 <- idw(formula=z~1,locations=mesurespdd,newdata=mesurespdd.grid,idp=2)
+PbIDW3 <- idw(formula=z~1,locations=mesurespdd,newdata=mesurespdd.grid,idp=3)
+PbIDW1modified <- idw(formula=z~1,locations=mesurespdd,newdata=mesurespdd.grid,'modified',idp=1)
+
+spplot(mesurespdd,"z",colorkey=TRUE)
+spplot(PbIDW1,"var1.pred") 
+spplot(PbIDW2,"var1.pred") #(Power = 2)
+spplot(PbIDW3,"var1.pred") #(Power = 3)
+
+
+plot(ozonekrig)
+
+```
+
+```{r}
+spplot(lzn.kriged,"var1.var")
+
+
+```
+Le variogram montre les half squared differences entre les valeurs échantillonées (semivariance) et les paires de points. On s'attend à des petites semivariances pour les petites distances, et à une semivariance stable pour les plus longues distances
+On peut voir sur l'image en pièce-jointe que l'erreur du modèle autokrige est minime au niveau des coordonnées où les mesures ont été faites...
+
+
+
+```{r}
+summary(ozonekrig$krige_output$var1.pred)
+summary(ozonekrig$krige_output$var1.stdev)
+
+
+```
+
+```{r}
+
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
