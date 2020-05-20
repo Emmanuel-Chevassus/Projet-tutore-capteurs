@@ -1,0 +1,714 @@
+---
+title: "Projet doc ACP et régression"
+author: "Etienne BRUGERE"
+date: "25/04/2020"
+output: html_document
+---
+
+
+
+# ** Création des fichiers 
+```{r }
+library(xlsx)
+library(xts)
+library(fpp2)
+library(ggplot2)
+
+#Janvier
+PDD_TRAIN_20190116_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/01/PDD_TRAIN_20190116_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Fevrier
+PDD_TRAIN_20190215_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/02/PDD_TRAIN_20190215_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190226_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/02/PDD_TRAIN_20190226_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190228_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/02/PDD_TRAIN_20190228_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Mars
+PDD_TRAIN_20190308_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/03/PDD_TRAIN_20190308_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Avril
+PDD_TRAIN_20190408_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/04/PDD_TRAIN_20190408_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190418_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/04/PDD_TRAIN_20190418_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190419_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/04/PDD_TRAIN_20190419_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190421_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/04/PDD_TRAIN_20190421_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190422_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/04/PDD_TRAIN_20190422_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190424_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/04/PDD_TRAIN_20190424_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+
+PDD_TRAIN_20190426_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/04/PDD_TRAIN_20190426_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190428_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/04/PDD_TRAIN_20190428_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Mai
+PDD_TRAIN_20190501_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/05/PDD_TRAIN_20190501_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190502_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/05/PDD_TRAIN_20190502_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190503_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/05/PDD_TRAIN_20190503_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190514_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/05/PDD_TRAIN_20190514_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190515_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/05/PDD_TRAIN_20190515_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190529_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/05/PDD_TRAIN_20190529_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Juin
+PDD_TRAIN_20190603_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/06/PDD_TRAIN_20190603_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190606_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/06/PDD_TRAIN_20190606_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190610_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/06/PDD_TRAIN_20190610_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190611_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/06/PDD_TRAIN_20190611_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190615_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/06/PDD_TRAIN_20190615_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190620_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/06/PDD_TRAIN_20190620_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Juillet
+PDD_TRAIN_20190701_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190701_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190704_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190704_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190713_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190713_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190715_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190715_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190716_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190716_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190718_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190718_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190721_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190721_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190728_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190728_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190730_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/07/PDD_TRAIN_20190730_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Aout
+PDD_TRAIN_20190801_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190801_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190803_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190803_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190806_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190806_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190810_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190810_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190811_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190811_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190816_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190816_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190818_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190818_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190821_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190821_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190822_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190822_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190826_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190826_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190828_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/08/PDD_TRAIN_20190828_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Septembre
+PDD_TRAIN_20190901_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/09/PDD_TRAIN_20190901_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190903_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/09/PDD_TRAIN_20190903_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190914_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/09/PDD_TRAIN_20190914_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190915_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/09/PDD_TRAIN_20190915_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190916_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/09/PDD_TRAIN_20190916_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190927_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/09/PDD_TRAIN_20190927_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20190930_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/09/PDD_TRAIN_20190930_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+#Octobre
+PDD_TRAIN_20191012_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/10/PDD_TRAIN_20191012_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20191013_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2019/10/PDD_TRAIN_20191013_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+```
+
+
+
+```{r }
+Janvier<-PDD_TRAIN_20190116_PTU_O3
+
+Fevrier<-rbind(PDD_TRAIN_20190215_PTU_O3,PDD_TRAIN_20190226_PTU_O3,PDD_TRAIN_20190228_PTU_O3)
+
+Mars<-PDD_TRAIN_20190308_PTU_O3
+
+Avril<-rbind(PDD_TRAIN_20190408_PTU_O3,PDD_TRAIN_20190418_PTU_O3,PDD_TRAIN_20190419_PTU_O3,PDD_TRAIN_20190421_PTU_O3,PDD_TRAIN_20190422_PTU_O3,PDD_TRAIN_20190424_PTU_O3,PDD_TRAIN_20190426_PTU_O3,PDD_TRAIN_20190428_PTU_O3)
+
+Mai<-rbind(PDD_TRAIN_20190501_PTU_O3,PDD_TRAIN_20190502_PTU_O3,PDD_TRAIN_20190503_PTU_O3,PDD_TRAIN_20190514_PTU_O3,PDD_TRAIN_20190515_PTU_O3,PDD_TRAIN_20190529_PTU_O3)
+
+Juin<-rbind(PDD_TRAIN_20190603_PTU_O3,PDD_TRAIN_20190606_PTU_O3,PDD_TRAIN_20190610_PTU_O3,PDD_TRAIN_20190611_PTU_O3,PDD_TRAIN_20190615_PTU_O3,PDD_TRAIN_20190620_PTU_O3)
+
+Juillet<-rbind(PDD_TRAIN_20190701_PTU_O3,PDD_TRAIN_20190704_PTU_O3,PDD_TRAIN_20190713_PTU_O3,PDD_TRAIN_20190715_PTU_O3,PDD_TRAIN_20190716_PTU_O3,PDD_TRAIN_20190718_PTU_O3,PDD_TRAIN_20190721_PTU_O3,PDD_TRAIN_20190728_PTU_O3,PDD_TRAIN_20190730_PTU_O3)
+
+Aout<-rbind(PDD_TRAIN_20190801_PTU_O3,PDD_TRAIN_20190803_PTU_O3,PDD_TRAIN_20190806_PTU_O3,PDD_TRAIN_20190810_PTU_O3,PDD_TRAIN_20190811_PTU_O3,PDD_TRAIN_20190816_PTU_O3,PDD_TRAIN_20190818_PTU_O3,PDD_TRAIN_20190821_PTU_O3,PDD_TRAIN_20190822_PTU_O3,PDD_TRAIN_20190826_PTU_O3,PDD_TRAIN_20190828_PTU_O3)
+
+Septembre<-rbind(PDD_TRAIN_20190901_PTU_O3,PDD_TRAIN_20190903_PTU_O3,PDD_TRAIN_20190914_PTU_O3,PDD_TRAIN_20190915_PTU_O3,PDD_TRAIN_20190916_PTU_O3,PDD_TRAIN_20190927_PTU_O3,PDD_TRAIN_20190930_PTU_O3)
+
+Octobre<-rbind(PDD_TRAIN_20191012_PTU_O3,PDD_TRAIN_20191013_PTU_O3)
+
+annee<-rbind(Janvier,Fevrier,Mars,Avril,Mai,Juin,Juillet,Aout,Septembre,Octobre)
+```
+
+
+* mois de janvier de 2015
+```{r}
+#Janvier
+PDD_TRAIN_20150101_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150101_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150102_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150102_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150103_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150103_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150104_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150104_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150105_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150105_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150106_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150106_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150107_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150107_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150108_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150108_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150109_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150109_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150110_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150110_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150111_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150111_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150112_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150112_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150113_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150113_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150114_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150114_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150115_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150115_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150117_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150117_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150118_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150118_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150119_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150119_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150121_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150121_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150122_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150122_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150126_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150126_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150127_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150127_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+
+PDD_TRAIN_20150128_PTU_O3<-read.delim("C:/Users/etien/Documents/PRojet/pddtrain/pddtrain/2015/01/PDD_TRAIN_20150128_PTU_O3.txt", header = TRUE, sep = "\t", dec = ".", skip=5)
+```
+
+```{r}
+JanvierACP<-rbind(PDD_TRAIN_20150101_PTU_O3, PDD_TRAIN_20150102_PTU_O3, PDD_TRAIN_20150103_PTU_O3, PDD_TRAIN_20150104_PTU_O3, PDD_TRAIN_20150105_PTU_O3, PDD_TRAIN_20150106_PTU_O3, PDD_TRAIN_20150107_PTU_O3, PDD_TRAIN_20150108_PTU_O3, PDD_TRAIN_20150109_PTU_O3, PDD_TRAIN_20150110_PTU_O3, PDD_TRAIN_20150111_PTU_O3, PDD_TRAIN_20150112_PTU_O3, PDD_TRAIN_20150113_PTU_O3, PDD_TRAIN_20150114_PTU_O3, PDD_TRAIN_20150115_PTU_O3, PDD_TRAIN_20150117_PTU_O3, PDD_TRAIN_20150118_PTU_O3, PDD_TRAIN_20150119_PTU_O3, PDD_TRAIN_20150121_PTU_O3, PDD_TRAIN_20150122_PTU_O3, PDD_TRAIN_20150126_PTU_O3, PDD_TRAIN_20150127_PTU_O3, PDD_TRAIN_20150128_PTU_O3)
+```
+ 
+
+```{r }
+
+      library("FactoMineR")
+      library("factoextra")
+      library(corrplot)
+```
+
+```{r}
+datdon <- subset(annee, select = -c(HHMMSS, DDMM.MMMM, DDDMM.MMMM))
+```
+
+
+# ** ACP **
+
+Une analyse en composante principale (ACP) permet l'étude des variables quantitatives et de réduire le nombre de dimensions de notre jeu de données. 
+# Sur l'année 
+```{r }
+
+acpl<-PCA(datdon, graph=F, ncp=6)
+       s=PCA(datdon, graph=F)
+summary(s)
+
+```
+
+```{r }
+corrplot(cor(datdon),method="number")
+
+```
+
+
+La première étape de l'ACP consiste à choisir le nombre d'axes à retenir afin d'avoir le plus d'information pertinente. Pour cela différents critères empiriques ou utilisant des tests d'hypothèses sont utilisés.
+
+
+```{r }
+#critère de Kaiser
+get_eig(s) 
+
+```
+
+```{r }
+# Test du coude 
+fviz_eig(s, addlabels = T, ylim=c(0,max(s$eig[,2])),barfill=2)
+
+```
+
+```{r }
+boxplot( PCA(datdon,graph=F,ncp=nrow(datdon))$ind$coord,main="Distribution suivant les axes")
+
+```
+
+```{r }
+#Test d'hypothèses : règle de Karlis Saporta Spinaki
+tt=1+2*sqrt((ncol(datdon)-1)/(nrow(datdon)-1))
+tt
+```
+
+```{r }
+which(acpl$eig[,1]>tt)
+
+```
+
+Le critère Kaiser ne retient que les axes associés à des valeurs propres supérieures à 1. Avec ce dernier on retient 2 dimensions. Sur l'ébloui des valeurs propres on observe un décrochement (coude) suivi d'une décroissance régulière, on retient donc 3. Avec le test de la règle de Karlis-Saporta-Spinaki on retient 2 dimensons. A 2 dimensions on a 78% d'informations. Ensuite il faut interpréter les projections suivant les axes à informations pertinentes.Dans un premier temps on s'interresse à la qualité de représentation des projections des variables et l'interprétation des projections des variables.
+
+
+VARIABLES 
+```{r }
+#Contribution des variables
+s$var$contrib
+
+```
+
+```{r }
+#Coordonnées des variables 
+s$var$coord
+
+```
+
+```{r }
+# qualité de représentation en fct de la dimension 
+
+par(mfrow=c(1,2))
+corrplot(t(s$var$cos2),method="number",is.corr=FALSE,tl.cex=.7,cl.pos="b")
+title( "cos2")
+corrplot(t(s$var$contrib),method="number",is.corr=FALSE,tl.cex=.7,cl.pos = "b")
+title("contribution")
+
+```
+
+# Sur l'année 
+
+```{r }
+# Le cercle en fonction de la qualité de représentation des variables
+
+fviz_pca_var(s,col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")) #(somme des cos 2 axes 1 et 2)
+
+```
+
+
+Ce cercle nous permet de voir que notre axe 1 oppose les variables hPa, ppb et deg_C à la variable m. Cela signifit que l'altitude est inversement proportionelle à la température, la pression ou encore la concentration en ozone.
+
+```{r }
+#Représentation biplot (en fonction du cos2)
+fviz_pca_biplot(s,col.ind = "cos2",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07") )
+
+```
+# Pour un mois d'été (aout)
+
+```{r}
+Ete <- subset(Aout, select = -c(HHMMSS, DDMM.MMMM, DDDMM.MMMM))
+```
+
+```{r }
+
+acpl<-PCA(Ete, graph=F, ncp=6)
+       Ao=PCA(Ete, graph=F)
+summary(Ao)
+
+```
+```{r }
+# Le cercle en fonction de la qualité de représentation des variables
+
+fviz_pca_var(Ao,col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")) #(somme des cos 2 axes 1 et 2)
+
+```
+# Pour un mois d'hiver (Décembre)
+
+
+```{r}
+Hiver <- subset(JanvierACP, select = -c(HHMMSS, DDMM.MMMM, DDDMM.MMMM))
+```
+
+```{r }
+
+acpl<-PCA(Hiver, graph=F, ncp=6)
+       Ja=PCA(Hiver, graph=F)
+summary(Ja)
+
+```
+```{r }
+# Le cercle en fonction de la qualité de représentation des variables
+
+fviz_pca_var(Ja,col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")) #(somme des cos 2 axes 1 et 2)
+
+```
+
+
+# ** Regression **
+
+La regression est un ensemble de méthodes statistiques permettant de rendre compte des relations qu'il y a entre une variable et une ou plusieurs autres. Cela nous permettra ici d'en savoir plus sur la relation entre quantité d'ozone et altitude/pression.
+
+On va tester dans un premier temps un modèle de regression linéaire simple. Il faut tester dans un premier temps tester l'hypothèse de linéarité. On calcule ainsi un coefficient de correlation:
+```{r }
+cor.test(annee$hPa,annee$ppb,use="complete.obs")
+```
+
+```{r }
+R = cor(annee$hPa,annee$ppb)
+R2=R^2
+```
+Notre R^2 étant le coefficient de détermination qui mesure la qualité d'ajustement de notre modèle.Si ce dernier est proche de 1 cela signifie que le modèle de régression linéaire est quasiment parfait pour expliquer notre variable ppb (correspondant à la concentration d'ozone) par la variable hPa (correspondant à la pression).
+
+Notre R^2 étant petit, il ne semble pas judicieux d'utiliser un modèle de régression linéaire simple.
+
+On va donc comment modéliser la relation entre notre variable ppb et plusieurs variables.L'intérêt de la régression linéaire multiple est ainsi de prédire notre variable ppb sur la base de variables explicatives(m, hPa, deg_c, X.RH).
+
+```{r }
+```
+
+
+```{r }
+pairs(datdon)
+
+```
+
+```{r }
+
+round(cor(datdon), 2)
+
+```
+
+```{r }
+regmult <- lm(ppb ~ m + hPa + deg_C + X.RH + deg_C.1, data = datdon)
+summary(regmult)
+
+```
+Notre R^2 étant encore une fois trop faible, il nous faut un autre modèle de régression. Peut être la méthode de régression polynomiale.
+
+```{r }
+##### Regression polynomiale #####
+x <- datdon$ppb
+y <- datdon$hPa
+reg_poly <- lm(y~x+I(x^2)+I(x^2))
+str(reg_poly)
+print(reg_poly)
+plot(reg_poly)
+abline(reg_poly)
+
+```
+Dans cette partie, nous allons mettre en oeuvre des méthodes no nparamétriques pour modéliser la variable ppb en fonction de la m.
+```{r }
+plot(datdon$ppb,datdon$m)
+
+
+```
+ SPlines
+```{r }
+plot(datdon$m,datdon$ppb, main="Smoothing Splines")
+Ozone.spl <- smooth.spline(datdon$m, datdon$ppb)
+Ozone.spl
+lines(Ozone.spl, col = "blue")
+lines(smooth.spline(datdon$m, datdon$ppb, df=15), lty=2,
+col = "red")
+legend(60,100,c(paste("default [C.V.] => df =",
+round(Ozone.spl$df,1))," df = 15"),
+col = c("blue","red"), lty = 1:2)
+
+```
+
+CALCUL DE L'ERREUR DE D'APPRENTISSAGE
+```{r }
+pred.app.spl=predict(Ozone.spl,datdon$m)
+sqrt(mean((pred.app.spl$y)**2))
+
+```
+# Test du Khi-deux d'indépendance
+
+On regarde la possible indépendance entre notre variables ppb et les autres.
+Divers test du Khi-deux d'indépendance sont effectués.
+
+On détaillera pour les variables ppb et m. 
+
+On va tester notre hypothèse H0 : ppb et m sont indépendants contre H1 : ppb et m ne sont pas indépendants.
+
+La p-value nous donne la probabilité de valider l'hypothèse H0. C'est à dire la probabilité qu'il n'y ai aucun lien entre nos deux variables.Plus notre p-value est petite, plus il y a un lien entre nos variables (et donc pas d'indépendance).
+
+
+```{r }
+
+chisq.test(datdon$ppb, datdon$m)
+chisq.test(datdon$ppb, datdon$hPa)
+chisq.test(datdon$ppb, datdon$deg_C)
+chisq.test(datdon$ppb, datdon$X.RH)
+chisq.test(datdon$ppb, datdon$deg_C.1)
+```
+
+
+Pour les variables m, hPa et deg_C notre p-value vaut 1. On peut ainsi valider l'hypothèse H0 et montrer que la variable ppb est indépendante des variables h, hPa et deg_C.
+Cependant pour les variables deg_C.1 et X.RH notre p-value est extrêmement petite. Il ya donc un lien entre nos variables ainsi on réfute l'hypothèse H0. On montre que la variable ppb est dépendante des variables X.RH et deg_C.1.
+
+L'utilisation des modèles de regression n'est donc pas à utliser car il y a une dépendance entre nos variables.
+
+--> SUPERPOSITION SUR UN MEME GRAPHE DE 2 SERIES AU COURS DU TEMPS 
+
+Pour voir comment évoluent nos différentes séries au cours du temps on va utiliser les séries temporelles.
+```{r }
+
+
+```
+
+
+Partie boîte à moustaches
+```{r }
+boxplot(datdon$ppb)
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
+
+```{r }
+
+
+```
